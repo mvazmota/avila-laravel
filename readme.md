@@ -1,4 +1,6 @@
-# Laravel PHP Framework
+# MCMM TDI EXAMPLE API
+
+## BUILT USING LARAVEL
 
 [![Build Status](https://travis-ci.org/laravel/framework.svg)](https://travis-ci.org/laravel/framework)
 [![Total Downloads](https://poser.pugx.org/laravel/framework/d/total.svg)](https://packagist.org/packages/laravel/framework)
@@ -14,13 +16,27 @@ Laravel is accessible, yet powerful, providing tools needed for large, robust ap
 
 Documentation for the framework can be found on the [Laravel website](http://laravel.com/docs).
 
-## Contributing
+## Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
+1 - Clone the repository to local web folder
 
-## Security Vulnerabilities
+2 - Download and install composer to the project folder: https://getcomposer.org/download/
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+3 - run "composer.phar install"
+
+4 - rename the .env.example file to .env
+
+5 - run "php artisan key:generate"
+
+6 - create an empty mysql database
+
+7 - define database settings in .env file (name, user password)
+
+8 - run "php artisan migrate --seed"
+
+## Notes
+
+This is just an example project for teaching purposes only
 
 ## License
 
