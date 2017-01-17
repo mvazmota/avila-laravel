@@ -13,6 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::resource('news', 'ApiController');
+Route::group(['prefix' => 'v1'], function()
+{
+    Route::resource('user', 'UserController');
+
+    Route::resource('news', 'ApiController');
+});
 
 Route::post('news/upload', 'ApiController@upload');

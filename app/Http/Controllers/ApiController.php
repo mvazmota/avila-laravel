@@ -111,30 +111,6 @@ class ApiController extends Controller
         return $news;
     }
 
-    public function upload(Request $request)
-    {
-        $data = $request->all();
-
-        $validator = Validator::make($data, [
-            'image' => 'required|image'
-        ],
-            [
-                'image.required' => 'O campo de imagem é obrigatório',
-                'image.image' => 'O campo de imagem é tem de ser do tipo imagem',
-            ]);
-
-        if($validator->fails())
-        {
-            $errors = $validator->errors()->all();
-
-            return $this->_result($errors, 1, 'NOK');
-        }
-
-        $path = $request->file('image')->hashName();
-        $request->file('image')->move(public_path('images'), $path);
-
-        return $data;
-    }
 
     /**
      * News Delete
