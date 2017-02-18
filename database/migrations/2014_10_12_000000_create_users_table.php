@@ -18,6 +18,13 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('avatar');
+            $table->string('level');
+            $table->string('score');
+            $table->integer('title_id')->unsigned()->nullable();
+            $table->foreign('title_id')->references('id')->on('titles')->onDelete('set null');
+            $table->integer('team_id')->unsigned()->nullable();
+            $table->foreign('team_id')->references('id')->on('teams')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
         });
