@@ -13,11 +13,12 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['prefix' => 'v1'], function()
-{
-    Route::resource('user', 'UserController');
+Route::get('users', 'UserController@index');
 
-    Route::resource('news', 'ApiController');
-});
+Route::get('users/{user}/badges', 'UserController@getBadges');
 
-Route::post('news/upload', 'ApiController@upload');
+Route::post('users/{user}', 'UserController@updateUser');
+
+Route::get('user', 'UserController@authUser');
+
+

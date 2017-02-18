@@ -18,9 +18,9 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('avatar');
-            $table->string('level');
-            $table->string('score');
+            $table->string('avatar')->nullable();
+            $table->string('level')->nullable();
+            $table->string('score')->nullable();
             $table->integer('title_id')->unsigned()->nullable();
             $table->foreign('title_id')->references('id')->on('titles')->onDelete('set null');
             $table->integer('team_id')->unsigned()->nullable();

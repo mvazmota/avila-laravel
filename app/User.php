@@ -32,4 +32,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo('App\Team', 'team_id');
     }
+
+    public function badges()
+    {
+        return $this->belongsToMany('App\Badge', 'badge_user', 'user_id', 'badge_id')->withTimestamps();
+    }
 }
