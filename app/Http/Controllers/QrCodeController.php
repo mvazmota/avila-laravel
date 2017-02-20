@@ -111,8 +111,6 @@ class QrCodeController extends Controller
                 $user->save();
                 break;
         }
-
-        return $this->_result($user);
     }
 
     public function checkLevel($userscore, $user)
@@ -124,16 +122,14 @@ class QrCodeController extends Controller
                 $user->level = 1;
                 $user->save();
                 break;
-            case ($score < 200):
-                $user->level = 1;
+            case ($score < 210):
+                $user->level = 2;
                 $user->save();
                 break;
-            case ($score < 300):
-                $user->level = 1;
+            case ($score < 340):
+                $user->level = 3;
                 $user->save();
                 break;
         }
-
-        return $this->_result($user);
     }
 }

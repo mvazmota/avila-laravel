@@ -179,8 +179,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
         Mpociot\ApiDoc\ApiDocGeneratorServiceProvider::class,
-        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class
-
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+        Barryvdh\Cors\ServiceProvider::class,
     ],
 
     /*
