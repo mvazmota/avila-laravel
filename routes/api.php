@@ -16,8 +16,8 @@ use Illuminate\Http\Request;
 Route::get('users', 'UserController@index');
 Route::get('users/{user}', 'UserController@showUser');
 Route::get('users/{user}/badges', 'UserController@getBadges');
-Route::post('users/{user}', 'UserController@updateUser');
 
+Route::post('user', 'UserController@updateUser');
 Route::get('user', 'UserController@authUser');
 
 Route::post('qrcode', 'QrCodeController@generateCode');

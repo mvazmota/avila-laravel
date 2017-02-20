@@ -74,6 +74,8 @@ class QrCodeController extends Controller
                 $user->score = $userscore[0]['score'];
                 $user->save();
 
+                $this->checkTitle($userscore, $user);
+
             } else {
 
                 $number = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
@@ -86,6 +88,50 @@ class QrCodeController extends Controller
                     print_r('erro');
                 }
             }
+        }
+
+        return $this->_result($user);
+    }
+
+    public function checkTitle($userscore, $user)
+    {
+        $score = $userscore[0]['score'];
+
+        switch ($score) {
+            case ($score < 100):
+                $user->title_id = 1;
+                $user->save();
+                break;
+            case ($score < 200):
+                $user->title_id = 2;
+                $user->save();
+                break;
+            case ($score < 300):
+                $user->title_id = 3;
+                $user->save();
+                break;
+        }
+
+        return $this->_result($user);
+    }
+
+    public function checkLevel($userscore, $user)
+    {
+        $score = $userscore[0]['score'];
+
+        switch ($score) {
+            case ($score < 100):
+                $user->level = 1;
+                $user->save();
+                break;
+            case ($score < 200):
+                $user->level = 1;
+                $user->save();
+                break;
+            case ($score < 300):
+                $user->level = 1;
+                $user->save();
+                break;
         }
 
         return $this->_result($user);

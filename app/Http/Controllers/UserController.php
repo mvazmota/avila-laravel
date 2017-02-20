@@ -32,7 +32,20 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        return $this->_result($user);
+        if (empty($user)){
+            return $this->_result('User doesn\'t exist', 404, "NOK");
+        } else {
+            $badges =  Auth::user()->badges()->get();
+            $result = [];
+
+            foreach ($badges as $badge){
+                $result[] = $badge;
+            }
+
+            $user['badges'] = $result;
+
+            return $this->_result($user);
+        }
     }
 
     public function showUser($id)
@@ -55,7 +68,7 @@ class UserController extends Controller
         }
     }
 
-    public function updateUser(Request $request, $id)
+    public function updateUser(Request $request)
     {
         $data = $request->all();
 
@@ -82,15 +95,19 @@ class UserController extends Controller
             // upload process
             $request->file('image')->move(public_path('images'), $path);
 
-            $users = User::whereId($id)->first();
-            $users->name = $data['name'];
+            $users = Auth::user();
+
+            if (!empty($data['name'])){
+                $users->name = $data['name'];
+            }
+
             $users->avatar = $path;
             $users->save();
 
             return $this->_result($users);
 
         } else {
-            $users = User::whereId($id)->first();
+            $users = Auth::user();
             $users->name = $data['name'];
             $users->save();
 
