@@ -31,23 +31,33 @@ class UserController extends Controller
     public function authUser()
     {
         $user = Auth::user();
-        $badges =  Auth::user()->badges()->orderBy('id')->get();
-        $result = [];
-
-        foreach ($badges as $badge){
-            $result[] = $badge;
-        }
-
-        $user['badges'] = $result;
 
         return $this->_result($user);
     }
 
-    public function updateUser(Request $request)
+    public function showUser($id)
+    {
+        $user = User::whereId($id)->first();
+
+        if (empty($user)){
+            return $this->_result('User doesn\'t exist', 404, "NOK");
+        } else {
+            $badges =  User::whereId($id)->first()->badges()->get();
+            $result = [];
+
+            foreach ($badges as $badge){
+                $result[] = $badge;
+            }
+
+            $user['badges'] = $result;
+
+            return $this->_result($user);
+        }
+    }
+
+    public function updateUser(Request $request, $id)
     {
         $data = $request->all();
-
-        print_r($data);
 
         $validator = Validator::make($data, [
             'name' => 'max:20',
@@ -72,7 +82,7 @@ class UserController extends Controller
             // upload process
             $request->file('image')->move(public_path('images'), $path);
 
-            $users = Auth::user();
+            $users = User::whereId($id)->first();
             $users->name = $data['name'];
             $users->avatar = $path;
             $users->save();
@@ -80,7 +90,7 @@ class UserController extends Controller
             return $this->_result($users);
 
         } else {
-            $users = Auth::user();
+            $users = User::whereId($id)->first();
             $users->name = $data['name'];
             $users->save();
 
