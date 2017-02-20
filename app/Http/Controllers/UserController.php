@@ -43,9 +43,11 @@ class UserController extends Controller
         return $this->_result($user);
     }
 
-    public function updateUser(Request $request, $id)
+    public function updateUser(Request $request)
     {
         $data = $request->all();
+
+        print_r($data);
 
         $validator = Validator::make($data, [
             'name' => 'max:20',
@@ -70,15 +72,15 @@ class UserController extends Controller
             // upload process
             $request->file('image')->move(public_path('images'), $path);
 
-            $users = User::find($id);
+            $users = Auth::user();
             $users->name = $data['name'];
-            $users->image = $path;
+            $users->avatar = $path;
             $users->save();
 
             return $this->_result($users);
 
         } else {
-            $users = User::whereId($id)->first();
+            $users = Auth::user();
             $users->name = $data['name'];
             $users->save();
 
