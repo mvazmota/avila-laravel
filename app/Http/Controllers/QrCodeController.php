@@ -79,7 +79,6 @@ class QrCodeController extends Controller
         $user = Auth::user();
         $userID = Auth::user()->id;
 
-
         $qrcode = DB::table('qrcodes')->where('name', $qrName)->first();
         $qrcodeID = $qrcode->id;
 
@@ -96,10 +95,12 @@ class QrCodeController extends Controller
         $user->save();
         $this->checkLevel($userscore, $user);
 
-        // Update Badges
-        $hasbadge = $user->badges()->where('id', $qrBadge)->exists();
-        if($hasbadge != 1){
-            $user->badges()->attach($qrBadge);
+        if ($qrBadge != 0) {
+            // Update Badges
+            $hasbadge = $user->badges()->where('id', $qrBadge)->exists();
+            if($hasbadge != 1){
+                $user->badges()->attach($qrBadge);
+            }
         }
 
         // Add user to scanned QR code
