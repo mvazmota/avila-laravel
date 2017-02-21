@@ -37,4 +37,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany('App\Badge', 'badge_user', 'user_id', 'badge_id')->withTimestamps();
     }
+
+    public function qrcodes()
+    {
+        return $this->belongsToMany('App\Qrcodes', 'qrcode_user', 'user_id', 'qrcode_id')->withTimestamps();
+    }
 }

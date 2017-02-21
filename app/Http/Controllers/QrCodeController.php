@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use Validator;
 use QrCode;
 use Auth;
 use DB;
+use App\User;
+use App\Qrcodes;
 
 class QrCodeController extends Controller
 {
@@ -22,12 +23,14 @@ class QrCodeController extends Controller
         $data = $request->all();
 
         $validator = Validator::make($data, [
-            'string' => 'required',
             'name' => 'required',
+            'points' => 'required',
+            'badge' => 'required',
         ],
             [
-                'string' => 'The title field is required',
                 'name' => 'The name field is required',
+                'points' => 'The points field is required',
+                'badge' => 'The badge field is required',
             ]);
 
         if($validator->fails())
@@ -37,14 +40,23 @@ class QrCodeController extends Controller
             return $this->_result($errors, 400, 'NOK');
         }
 
-        $qrcode = QrCode::format('png')->size(200)->generate($data['string'], '../public/qrcodes/'.$data['name'].'.png');
+        $qrcode = QrCode::format('png')->size(200)->generate(\GuzzleHttp\json_encode($data), '../public/qrcodes/'.$data['name'].'.png');
 
-        return $this->_result($qrcode);
+        print_r(\GuzzleHttp\json_encode($data));
+
+        $qrcodes = Qrcodes::create([
+            'name' => $data['name'],
+            'image' => '../public/qrcodes/'.$data['name'].'.png',
+        ]);
+
+        return $this->_result($qrcodes);
     }
 
     public function scanCode(Request $request)
     {
         $data = $request->all();
+
+        $result = \GuzzleHttp\json_decode($data['code']);
 
         $validator = Validator::make($data, [
             'code' => 'required',
@@ -60,68 +72,44 @@ class QrCodeController extends Controller
             return $this->_result($errors, 400, 'NOK');
         }
 
+        $qrName = $result->name;
+        $qrPoints = $result->points;
+        $qrBadge = $result->badge;
+
         $user = Auth::user();
+        $userID = Auth::user()->id;
 
-        $array = $data['code'];
-        $newarray = explode(',', $array);
 
-        foreach ($newarray as $value) {
+        $qrcode = DB::table('qrcodes')->where('name', $qrName)->first();
+        $qrcodeID = $qrcode->id;
 
-            if (0 === strpos($value, 'pontos')){
-
-                $number = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-
-                $userscore = Auth::user()->score;
-
-                print_r($userscore);
-
-                $userscore += $number;
-
-                $user->score = $userscore;
-                $user->save();
-
-                $this->checkLevel($userscore, $user);
-
-            } else {
-
-                $number = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
-
-                $hasbadge = $user->badges()->where('id', $number)->exists();
-
-                if($hasbadge != 1){
-                    $user->badges()->attach($number);
-                } else {
-                    print_r('erro');
-                }
-            }
+        // Check if code was scanned by the user
+        $hasqr = $user->qrcodes()->where('id', $qrcodeID)->exists();
+        if($hasqr == 1){
+            return $this->_result('User already scanned the code', 400, "NOK");
         }
+
+        // Update Score
+        $userscore = Auth::user()->score;
+        $userscore += $qrPoints;
+        $user->score = $userscore;
+        $user->save();
+        $this->checkLevel($userscore, $user);
+
+        // Update Badges
+        $hasbadge = $user->badges()->where('id', $qrBadge)->exists();
+        if($hasbadge != 1){
+            $user->badges()->attach($qrBadge);
+        }
+
+        // Add user to scanned QR code
+        $user->qrcodes()->attach($qrcodeID);
 
         return $this->_result($user);
     }
 
-//    public function checkTitle($userscore, $user)
-//    {
-//        $score = $userscore[0]['score'];
-//
-//        switch ($score) {
-//            case ($score < 100):
-//                $user->title_id = 1;
-//                $user->save();
-//                break;
-//            case ($score < 200):
-//                $user->title_id = 2;
-//                $user->save();
-//                break;
-//            case ($score < 300):
-//                $user->title_id = 3;
-//                $user->save();
-//                break;
-//        }
-//    }
-
     public function checkLevel($userscore, $user)
     {
-
         switch ($userscore) {
             case ($userscore < 1000):
                 $user->level = 1;
