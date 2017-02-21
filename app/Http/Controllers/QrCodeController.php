@@ -7,11 +7,16 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Validator;
 use QrCode;
-use App\User;
+use Auth;
 use DB;
 
 class QrCodeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
     public function generateCode(Request $request)
     {
         $data = $request->all();
@@ -32,12 +37,12 @@ class QrCodeController extends Controller
             return $this->_result($errors, 400, 'NOK');
         }
 
-        $qrcode = QrCode::format('png')->generate($data['string'], '../public/qrcodes/'.$data['name'].'.png');
+        $qrcode = QrCode::format('png')->size(200)->generate($data['string'], '../public/qrcodes/'.$data['name'].'.png');
 
         return $this->_result($qrcode);
     }
 
-    public function scanCode(Request $request, $id)
+    public function scanCode(Request $request)
     {
         $data = $request->all();
 
@@ -55,7 +60,7 @@ class QrCodeController extends Controller
             return $this->_result($errors, 400, 'NOK');
         }
 
-        $user = User::whereId($id)->first();
+        $user = Auth::user();
 
         $array = $data['code'];
         $newarray = explode(',', $array);
@@ -66,12 +71,13 @@ class QrCodeController extends Controller
 
                 $number = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
 
-                $userscore = User::whereId($id)->where('id', '=', $id)->select('score')->get();
-                $userscore = $userscore->toArray();
+                $userscore = Auth::user()->score;
 
-                $userscore[0]['score'] += $number;
+                print_r($userscore);
 
-                $user->score = $userscore[0]['score'];
+                $userscore += $number;
+
+                $user->score = $userscore;
                 $user->save();
 
                 $this->checkLevel($userscore, $user);
@@ -115,30 +121,29 @@ class QrCodeController extends Controller
 
     public function checkLevel($userscore, $user)
     {
-        $score = $userscore[0]['score'];
 
-        switch ($score) {
-            case ($score < 1000):
+        switch ($userscore) {
+            case ($userscore < 1000):
                 $user->level = 1;
                 $user->title_id = 1;
                 $user->save();
                 break;
-            case ($score < 3000):
+            case ($userscore < 3000):
                 $user->level = 2;
                 $user->title_id = 2;
                 $user->save();
                 break;
-            case ($score < 6000):
+            case ($userscore < 6000):
                 $user->level = 3;
                 $user->title_id = 3;
                 $user->save();
                 break;
-            case ($score < 10000):
+            case ($userscore < 10000):
                 $user->level = 4;
                 $user->title_id = 4;
                 $user->save();
                 break;
-            case ($score < 15000):
+            case ($userscore < 15000):
                 $user->level = 5;
                 $user->title_id = 5;
                 $user->save();

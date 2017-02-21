@@ -21,5 +21,5 @@ Route::post('user', 'UserController@updateUser');
 Route::get('user', 'UserController@authUser');
 
 Route::post('qrcode', 'QrCodeController@generateCode');
-Route::post('users/{user}/scan', 'QrCodeController@scanCode');
+Route::post('user/scan', 'QrCodeController@scanCode');
 
